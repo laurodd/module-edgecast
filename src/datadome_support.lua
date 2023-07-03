@@ -89,12 +89,16 @@ headersLength = {
 
 
 function truncateHeaders(headers)
-  for k,v in pairs(headers) do
-    if headersLength[k] ~=nil then
-      headers[k] = string.sub(v, 1, headersLength[k])
+    for k,v in pairs(headers) do
+      if headersLength[k] ~= nil then
+        if headersLength[k] > 0 then
+          headers[k] = string.sub(v, 1, headersLength[k])
+        else  -- backward truncation
+          headers[k] = string.sub(v, headersLength[k])
+        end
+      end
     end
-  end
-  return headers
+    return headers
 end
 
 --//
