@@ -1,18 +1,45 @@
--- datadome_support.lua 
--- THandley/RYu 20230401
-
--- Core from https://package.datadome.co/linux/DataDome-HaproxyLua-latest.tgz
-
---
--- luacheck: globals  DATADOME_MODULE_NAME DATADOME_MODULE_VERSION log truncateHeaders getCurrentMicroTime charToHex urlencode split buildBody extractHeaderList get_post_response_headers table_to_encoded_string main headersLength handleClientId buildKeyList
---
---
-
-
 DATADOME_MODULE_NAME  = 'EdgeCast'
 DATADOME_MODULE_VERSION  = '0.0.1'
 
+headersLength = {
+    ['SecCHUAMobile']           = 8,
+    ['SecCHDeviceMemory']       = 8,
+    ['SecFetchUser']            = 8,
+    ['SecCHUAArch']             = 16,
+    ['SecCHUAPlatform']         = 32,
+    ['SecFetchDest']            = 32,
+    ['SecFetchMode']            = 32,
+    ['ContentType']             = 64,
+    ['SecFetchSite']            = 64,
+    ['SecCHUA']                 = 128,
+    ['SecCHUAModel']            = 128,
+    ['AcceptCharset']           = 128,
+    ['AcceptEncoding']          = 128,
+    ['CacheControl']            = 128,
+    ['ClientID']                = 128,
+    ['Connection']              = 128,
+    ['Pragma']                  = 128,
+    ['X-Requested-With']        = 128,
+    ['From']                    = 128,
+    ['TrueClientIP']            = 128,
+    ['X-Real-IP']               = 128,
+    ['AcceptLanguage']          = 256,
+    ['SecCHUAFullVersionList']  = 256,
+    ['Via']                     = 256,
+    ['XForwardedForIP']         = -512,
+    ['Accept']                  = 512,
+    ['HeadersList']             = 512,
+    ['Host']                    = 512,
+    ['Origin']                  = 512,
+    ['ServerHostname']          = 512,
+    ['ServerName']              = 512,
+    ['UserAgent']               = 768,
+    ['Referer']                 = 1024,
+    ['Request']                 = 2048
+}
+
 local script_name = "datadome_support.lua"
+
 function log(v, ...)
     --[[
     v: log tag / response header value
@@ -49,45 +76,6 @@ function log(v, ...)
     return nil
 end
 
--- Maximun lenght allowed for each header value in POST content
-headersLength = {
-  ['SecCHUAMobile']           = 8,
-  ['SecCHDeviceMemory']       = 8,
-  ['SecFetchUser']            = 8,
-  ['SecCHUAArch']             = 16,
-  ['SecCHUAPlatform']         = 32,
-  ['SecFetchDest']            = 32,
-  ['SecFetchMode']            = 32,
-  ['ContentType']             = 64,
-  ['SecFetchSite']            = 64,
-  ['SecCHUA']                 = 128,
-  ['SecCHUAModel']            = 128,
-  ['AcceptCharset']           = 128,
-  ['AcceptEncoding']          = 128,
-  ['CacheControl']            = 128,
-  ['ClientID']                = 128,
-  ['Connection']              = 128,
-  ['Pragma']                  = 128,
-  ['X-Requested-With']        = 128,
-  ['From']                    = 128,
-  ['TrueClientIP']            = 128,
-  ['X-Real-IP']               = 128,
-  ['AcceptLanguage']          = 256,
-  ['SecCHUAFullVersionList']  = 256,
-  ['Via']                     = 256,
-  ['XForwardedForIP']         = -512,
-  ['Accept']                  = 512,
-  ['HeadersList']             = 512,
-  ['Host']                    = 512,
-  ['Origin']                  = 512,
-  ['ServerHostname']          = 512,
-  ['ServerName']              = 512,
-  ['UserAgent']               = 768,
-  ['Referer']                 = 1024,
-  ['Request']                 = 2048
-}
-
-
 function truncateHeaders(headers)
     for k,v in pairs(headers) do
       if headersLength[k] ~= nil then
@@ -101,12 +89,10 @@ function truncateHeaders(headers)
     return headers
 end
 
---//
 function getCurrentMicroTime()
   -- we need time up to microseccconds, but at lua we can do up to seconds :( round it
   return tostring(os.time()) .. "000000"
 end
---
 
 function charToHex(c)
 	return string.format("%%%02X", string.byte(c))
@@ -133,7 +119,7 @@ function dump(o)
 	else
 	   return tostring(o)
 	end
- end
+end
 
 function split(s, delimiter)
   local result = {};
@@ -270,19 +256,11 @@ function table_to_encoded_string(tablein)
     return encoded_string
 end
 
-
--- 
---
----------------
---
---
 function main() 
-
-    -- get account parameters
-    -- enable, key, post-request-timeout, post-request-endpoint ....
     local key =  sailfish.get_user_var("datadome-key")
     local post_request_timeout = sailfish.get_user_var("post-request-timeout")
     local post_request_endpoint = sailfish.get_user_var("post-request-endpoint")
+
     if not ( key and post_request_timeout and post_request_endpoint) then
         local msg = "Required initial input missing " ..
                     " key " .. tostring(key) .. 
@@ -440,6 +418,7 @@ function main()
     end
 
 end
+
 if sailfish.get_user_var("enable-datadome")  == "true" then
     return main() 
 end
