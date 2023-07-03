@@ -9,7 +9,7 @@
 --
 
 
-DATADOME_MODULE_NAME  = 'datadome_support.lua'
+DATADOME_MODULE_NAME  = 'EdgeCast'
 DATADOME_MODULE_VERSION  = '0.0.1'
 
 local script_name = "datadome_support.lua"
